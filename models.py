@@ -54,3 +54,20 @@ class Card(Base):
     def __repr__(self):
         return f"<Card id={self.id} front={self.front_text[:20]!r}>"
 
+class ReviewLog(Base):
+    __tablename__ = "review_logs"
+ 
+    id = Column(Integer, primary_key=True)
+    card_id = Column(Integer, ForeignKey("cards.id"), nullable=False)
+ 
+    reviewed_at = Column(DateTime, default=datetime.utcnow)
+    quality_rating = Column(Integer, nullable=False)  
+    interval_before = Column(Integer)
+    interval_after = Column(Integer)
+    easiness_before = Column(Float)
+    easiness_after = Column(Float)
+ 
+    card = relationship("Card", back_populates="review_logs")
+ 
+    def __repr__(self):
+        return f"<ReviewLog card_id={self.card_id} quality={self.quality_rating}>"
