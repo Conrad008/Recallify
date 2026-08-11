@@ -26,3 +26,9 @@ def save_card_image(source_path: str) -> str:
     shutil.copy2(source_path, destination_path)
  
     return destination_path 
+
+def delete_card_image(image_path: str):
+
+    if image_path and os.path.isfile(image_path):
+        os.remove(image_path)
+ 
