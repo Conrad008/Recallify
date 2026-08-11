@@ -59,4 +59,9 @@ def _switch(self, frame: ctk.CTkFrame):
 def on_closing(self):
     self.session.close()
     self.destroy()
+
+def run():
+    app = App()
+    app.protocol("WM_DELETE_WINDOW", app.on_closing)
+    app.mainloop()
  
