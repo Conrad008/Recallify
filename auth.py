@@ -40,3 +40,13 @@ def register_user(session: Session, username: str, password: str) -> User:
     session.add(user)
     session.commit()
     return user
+
+def login_user(session: Session, username: str, password: str) -> User:
+    username = username.strip()
+    user = session.query(User).filter_by(username=username).first()
+ 
+    if not user or not verify_password(password, user.password_hash):
+        raise AuthError("Invalid username or password.")
+ 
+    return user
+ 
