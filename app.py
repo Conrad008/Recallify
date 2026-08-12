@@ -2,8 +2,8 @@ import customtkinter as ctk
  
 from database import init_db, get_session
 
-from ui.login_view import LoginView
-from ui.deck_list_view import DeckListView
+from login import LoginView
+from deck import DeckListView
  
 class App(ctk.CTk):
     def __init__(self):
@@ -31,11 +31,11 @@ def on_login_success(self, user):
     self.current_user = user
     self.show_deck_list()
  
- def show_deck_list(self):
+def show_deck_list(self):
     self._switch(DeckListView(self))
  
 def show_deck_detail(self, deck_id: int):
-    from ui.deck_detail_view import DeckDetailView
+    from deck import DeckDetailView
     self._switch(DeckDetailView(self, deck_id))
  
 def show_review(self, deck_id: int):
