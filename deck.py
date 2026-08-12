@@ -32,4 +32,28 @@ class DeckListView(ctk.CTkFrame):
             header, text="+ New Deck", width=120, command=self._open_new_deck_dialog
         )
         new_deck_btn.pack(side="right", padx=(0, 10))
-    
+
+    def build_deck_list(self):
+        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_frame.pack(fill="both", expand=True, padx=24, pady=10)
+ 
+        self._refresh_decks()
+ 
+    def refresh_decks(self):
+        for widget in self.scroll_frame.winfo_children():
+            widget.destroy()
+ 
+        user = self.master_app.current_user
+        decks = user.decks
+ 
+        if not decks:
+            empty_label = ctk.CTkLabel(
+                self.scroll_frame,
+                text="No decks yet. Click '+ New Deck' to create your first one.",
+                text_color="gray",
+            )
+            empty_label.pack(pady=40)
+            return
+ 
+        for deck in decks:
+            self._build_deck_card(deck)
