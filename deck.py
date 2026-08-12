@@ -56,4 +56,44 @@ class DeckListView(ctk.CTkFrame):
             return
  
         for deck in decks:
-            self._build_deck_card(deck)
+            self.build_deck_card(deck)
+
+    def build_deck_card(self, deck: Deck):
+        due_count = len(deck.due_cards(self.master_app.session))
+        card_count = len(deck.cards)
+ 
+        card = ctk.CTkFrame(self.scroll_frame, corner_radius=10)
+        card.pack(fill="x", pady=6)
+ 
+        info_frame = ctk.CTkFrame(card, fg_color="transparent")
+        info_frame.pack(side="left", fill="both", expand=True, padx=16, pady=12)
+ 
+        name_label = ctk.CTkLabel(
+            info_frame, text=deck.name, font=ctk.CTkFont(size=16, weight="bold"), anchor="w"
+        )
+        name_label.pack(anchor="w")
+ 
+        detail_text = f"{card_count} card{'s' if card_count != 1 else ''}"
+        if due_count:
+            detail_text += f"  •  {due_count} due today"
+        detail_label = ctk.CTkLabel(
+            info_frame, text=detail_text, text_color="gray", anchor="w"
+        )
+        detail_label.pack(anchor="w")
+ 
+        button_frame = ctk.CTkFrame(card, fg_color="transparent")
+        button_frame.pack(side="right", padx=16, pady=12)
+ 
+        open_btn = ctk.CTkButton(
+            button_frame, text="Open", width=80,
+            command=lambda d=deck: self.master_app.show_deck_detail(d.id),
+        )
+        open_btn.pack(side="left", padx=4)
+ 
+        review_btn = ctk.CTkButton(
+            button_frame, text=f"Review ({due_count})", width=110,
+            state="normal" if due_count else "disabled",
+            fg_color="#2fa572" if due_count else "gray",
+            command=lambda d=deck: self.master_app.show_review(d.id),
+        )
+        review_btn.pack(side="left", padx=4)
