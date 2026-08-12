@@ -29,7 +29,7 @@ class DeckListView(ctk.CTkFrame):
         logout_btn.pack(side="right")
  
         new_deck_btn = ctk.CTkButton(
-            header, text="+ New Deck", width=120, command=self._open_new_deck_dialog
+            header, text="+ New Deck", width=120, command=self.open_new_deck_dialog
         )
         new_deck_btn.pack(side="right", padx=(0, 10))
 
@@ -97,3 +97,13 @@ class DeckListView(ctk.CTkFrame):
             command=lambda d=deck: self.master_app.show_review(d.id),
         )
         review_btn.pack(side="left", padx=4)
+     
+    def open_new_deck_dialog(self):
+        dialog = ctk.CTkInputDialog(text="Deck name:", title="New Deck")
+        name = dialog.get_input()
+ 
+        if name and name.strip():
+            deck = Deck(user_id=self.master_app.current_user.id, name=name.strip())
+            self.master_app.session.add(deck)
+            self.master_app.session.commit()
+            self.refresh_decks()
