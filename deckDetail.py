@@ -79,13 +79,47 @@ class DeckDetail(ctk.CTkFrame):
         self.back_entry.delete(0, "end")
         self.form_error_label.configure(text="")
  
-        self._refresh_card_list()
+        self.refresh_card_list()
         self.refresh_header_review_button()
 
     def refresh_header_review_button(self):
         for widget in self.winfo_children():
             widget.destroy()
-        self._build_header()
-        self._build_add_card_form()
-        self._build_card_list()
+        self.build_header()
+        self.build_add_card_form()
+        self.build_card_list()
+     
+    def build_card_list(self):
+        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_frame.pack(fill="both", expand=True, padx=24, pady=(0, 20))
+        self.refresh_card_list()
+ 
+    def refresh_card_list(self):
+        for widget in self.scroll_frame.winfo_children():
+            widget.destroy()
+ 
+        self.master_app.session.refresh(self.deck)
+        cards = self.deck.cards
+ 
+        if not cards:
+            empty_label = ctk.CTkLabel(
+                self.scroll_frame, text="No cards yet. Add one above.", text_color="gray"
+            )
+            empty_label.pack(pady=30)
+            return
+ 
+        for card in cards:
+            row = ctk.CTkFrame(self.scroll_frame, corner_radius=8)
+            row.pack(fill="x", pady=4)
+ 
+            front_label = ctk.CTkLabel(
+                row, text=card.front_text, anchor="w", font=ctk.CTkFont(weight="bold")
+            )
+            front_label.pack(side="left", padx=(12, 8), pady=8)
+ 
+            back_label = ctk.CTkLabel(row, text=f"→ {card.back_text}", anchor="w", text_color="gray")
+            back_label.pack(side="left", padx=(0, 8), pady=8)
+ 
+            status_label = ctk.CTkLabel(row, text=card.status, text_color="#2fa572")
+            status_label.pack(side="right", padx=12)
  
