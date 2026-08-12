@@ -57,8 +57,27 @@ class DeckDetail(ctk.CTkFrame):
         self.back_entry.pack(side="left", fill="x", expand=True, padx=(0, 8))
         self.back_entry.bind("<Return>", lambda e: self._on_add_card())
  
-        add_btn = ctk.CTkButton(entry_row, text="Add", width=80, command=self._on_add_card)
+        add_btn = ctk.CTkButton(entry_row, text="Add", width=80, command=self.on_add_card)
         add_btn.pack(side="left")
  
         self.form_error_label = ctk.CTkLabel(form, text="", text_color="#e74c3c")
         self.form_error_label.pack(anchor="w", padx=16, pady=(0, 8))
+
+    def on_add_card(self):
+        front = self.front_entry.get().strip()
+        back = self.back_entry.get().strip()
+ 
+        if not front or not back:
+            self.form_error_label.configure(text="Both front and back are required.")
+            return
+ 
+        card = Card(deck_id=self.deck_id, front_text=front, back_text=back)
+        self.master_app.session.add(card)
+        self.master_app.session.commit()
+ 
+        self.front_entry.delete(0, "end")
+        self.back_entry.delete(0, "end")
+        self.form_error_label.configure(text="")
+ 
+        self._refresh_card_list()
+        self._refresh_header_review_button()
