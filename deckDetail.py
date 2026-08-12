@@ -80,4 +80,12 @@ class DeckDetail(ctk.CTkFrame):
         self.form_error_label.configure(text="")
  
         self._refresh_card_list()
-        self._refresh_header_review_button()
+        self.refresh_header_review_button()
+
+    def refresh_header_review_button(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self._build_header()
+        self._build_add_card_form()
+        self._build_card_list()
+ 
