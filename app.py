@@ -35,11 +35,11 @@ def show_deck_list(self):
     self._switch(DeckListView(self))
  
 def show_deck_detail(self, deck_id: int):
-    from deck import DeckDetailView
-    self._switch(DeckDetailView(self, deck_id))
+    from deckDetail import DeckDetail
+    self._switch(DeckDetail(self, deck_id))
  
 def show_review(self, deck_id: int):
-    from ui.review_view import ReviewView
+    from review import ReviewView
     self._switch(ReviewView(self, deck_id))
  
 def show_stats(self, deck_id: int = None):
