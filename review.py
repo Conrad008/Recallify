@@ -87,4 +87,73 @@ class ReviewView(ctk.CTkFrame):
             )
             btn.pack(side="left", padx=6)
             self.rating_buttons.append(btn)
+
+    def load_next_card(self):
+        self.showing_answer = False
+        self.back_label.configure(text="")
+        self.rating_buttons_frame.pack_forget()
+ 
+        if not self.queue:
+            self._show_session_complete()
+            return
+ 
+        self.current_card = self.queue[0]
+        self.front_label.configure(text=self.current_card.front_text)
+        self.progress_label.configure(
+            text=f"Card {self.reviewed_count + 1} of {self.total_due}"
+        )
+        self.show_answer_btn.pack(pady=8)
+ 
+    def _on_show_answer(self):
+        self.showing_answer = True
+        self.back_label.configure(text=self.current_card.back_text)
+        self.show_answer_btn.pack_forget()
+        self.rating_buttons_frame.pack(pady=8)
+ 
+    def _on_rate(self, quality: int):
+        card = self.current_card
+        session = self.master_app.session
+ 
+        interval_before = card.interval
+        easiness_before = card.easiness_factor
+ 
+        result = SpacedRepetitionScheduler.calculate_next_review(
+            quality_rating=quality,
+            easiness_factor=card.easiness_factor,
+            repetitions=card.repetitions,
+            interval=card.interval,
+            today=date.today(),
+        )
+ 
+        card.easiness_factor = result.easiness_factor
+        card.repetitions = result.repetitions
+        card.interval = result.interval
+        card.next_review_date = result.next_review_date
+ 
+        log = ReviewLog(
+            card_id=card.id,
+            quality_rating=quality,
+            interval_before=interval_before,
+            interval_after=result.interval,
+            easiness_before=easiness_before,
+            easiness_after=result.easiness_factor,
+        )
+        session.add(log)
+        session.commit()
+ 
+        self.reviewed_count += 1
+        self.queue.pop(0)
+        self.load_next_card()
+ 
+    def _show_session_complete(self):
+        self.front_label.configure(text="All done for now! 🎉")
+        self.progress_label.configure(text=f"Reviewed {self.reviewed_count} card(s)")
+        self.show_answer_btn.pack_forget()
+        self.rating_buttons_frame.pack_forget()
+ 
+        done_btn = ctk.CTkButton(
+            self.controls_frame, text="Back to Deck", width=200, height=44,
+            command=lambda: self.master_app.show_deck_detail(self.deck_id),
+        )
+        done_btn.pack(pady=8)
  
