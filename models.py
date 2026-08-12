@@ -20,6 +20,25 @@ class User(Base):
     def __repr__(self):
         return f"<User id={self.id} username={self.username!r}>"
 
+class Deck(Base):
+    __tablename__ = "decks"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, default="")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="decks")
+    cards = relationship("Card", back_populates="deck", cascade="all, delete-orphan")
+
+    def due_cards(self, session, today: date = None):
+        today = today or date.today()
+        return [c for c in self.cards if c.next_review_date <= today]
+
+    def __repr__(self):
+        return f"<Deck id={self.id} name={self.name!r}>"
+
 class Card(Base):
     __tablename__ = "cards"
  
