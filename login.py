@@ -10,9 +10,9 @@ class LoginView(ctk.CTkFrame):
  
         self.mode = "login"  
  
-        self._build_ui()
+        self.build_ui()
 
-    def _build_ui(self):
+    def build_ui(self):
         container = ctk.CTkFrame(self, fg_color="transparent")
         container.place(relx=0.5, rely=0.5, anchor="center")
  
@@ -52,3 +52,34 @@ class LoginView(ctk.CTkFrame):
             command=self._toggle_mode,
         )
         self.toggle_button.pack(pady=(0, 4))
+     
+    def toggle_mode(self):
+        self.mode = "register" if self.mode == "login" else "login"
+        self.error_label.configure(text="")
+        self.username_entry.delete(0, "end")
+        self.password_entry.delete(0, "end")
+ 
+        if self.mode == "login":
+            self.subtitle_label.configure(text="Log in to your account")
+            self.submit_button.configure(text="Log In")
+            self.toggle_button.configure(text="Don't have an account? Create one")
+        else:
+            self.subtitle_label.configure(text="Create a new account")
+            self.submit_button.configure(text="Create Account")
+            self.toggle_button.configure(text="Already have an account? Log in")
+
+    def on_submit(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        session = self.master_app.session
+ 
+        try:
+            if self.mode == "login":
+                user = login_user(session, username, password)
+            else:
+                user = register_user(session, username, password)
+        except AuthError as e:
+            self.error_label.configure(text=str(e))
+            return
+ 
+        self.on_login_success(user)
