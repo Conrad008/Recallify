@@ -11,8 +11,8 @@ class DeckDetail(ctk.CTkFrame):
         self.deck = self.master_app.session.get(Deck, deck_id)
  
         self.build_header()
-        self._build_add_card_form()
-        self._build_card_list()
+        self.build_add_card_form()
+        self.build_card_list()
 
     def build_header(self):
         header = ctk.CTkFrame(self, fg_color="transparent")
@@ -37,3 +37,28 @@ class DeckDetail(ctk.CTkFrame):
             command=lambda: self.master_app.show_review(self.deck_id),
         )
         review_btn.pack(side="right")
+
+    def build_add_card_form(self):
+        form = ctk.CTkFrame(self, corner_radius=10)
+        form.pack(fill="x", padx=24, pady=(0, 12))
+ 
+        form_label = ctk.CTkLabel(
+            form, text="Add a Card", font=ctk.CTkFont(size=14, weight="bold")
+        )
+        form_label.pack(anchor="w", padx=16, pady=(12, 4))
+ 
+        entry_row = ctk.CTkFrame(form, fg_color="transparent")
+        entry_row.pack(fill="x", padx=16, pady=(0, 12))
+ 
+        self.front_entry = ctk.CTkEntry(entry_row, placeholder_text="Front (question)")
+        self.front_entry.pack(side="left", fill="x", expand=True, padx=(0, 8))
+ 
+        self.back_entry = ctk.CTkEntry(entry_row, placeholder_text="Back (answer)")
+        self.back_entry.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        self.back_entry.bind("<Return>", lambda e: self._on_add_card())
+ 
+        add_btn = ctk.CTkButton(entry_row, text="Add", width=80, command=self._on_add_card)
+        add_btn.pack(side="left")
+ 
+        self.form_error_label = ctk.CTkLabel(form, text="", text_color="#e74c3c")
+        self.form_error_label.pack(anchor="w", padx=16, pady=(0, 8))
