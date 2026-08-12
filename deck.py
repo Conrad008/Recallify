@@ -37,7 +37,7 @@ class DeckListView(ctk.CTkFrame):
         self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.scroll_frame.pack(fill="both", expand=True, padx=24, pady=10)
  
-        self._refresh_decks()
+        self.refresh_decks()
  
     def refresh_decks(self):
         for widget in self.scroll_frame.winfo_children():
