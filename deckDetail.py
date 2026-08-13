@@ -1,6 +1,9 @@
 import customtkinter as ctk
  
 from models import Card, Deck
+from csvImporter import CSVImporter
+from tkinter import filedialog
+
  
  
 class DeckDetail(ctk.CTkFrame):
@@ -80,6 +83,35 @@ class DeckDetail(ctk.CTkFrame):
         self.form_error_label.configure(text="")
  
         self.refresh_card_list()
+        self.refresh_header_review_button()
+
+    def on_import_csv(self):
+        file_path = filedialog.askopenfilename(
+            title="Select a CSV file",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        )
+        if not file_path:
+            return  # user cancelled the dialog
+ 
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except Exception as e:
+            self.form_error_label.configure(text=f"Could not read file: {e}")
+            return
+ 
+        cards = CSVImporter.import_cards(content, self.deck_id)
+ 
+        if not cards:
+            self.form_error_label.configure(
+                text="No valid rows found. Expected columns: front, back"
+            )
+            return
+ 
+        self.master_app.session.add_all(cards)
+        self.master_app.session.commit()
+ 
+        self.form_error_label.configure(text=f"Imported {len(cards)} card(s).", text_color="#2fa572")
         self.refresh_header_review_button()
 
     def refresh_header_review_button(self):
