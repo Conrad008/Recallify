@@ -3,6 +3,7 @@ import customtkinter as ctk
 from models import Card, Deck
 from csvImporter import CSVImporter
 from tkinter import filedialog
+from imgHandler import save_card_image
 
  
  
@@ -12,6 +13,7 @@ class DeckDetail(ctk.CTkFrame):
         self.master_app = master
         self.deck_id = deck_id
         self.deck = self.master_app.session.get(Deck, deck_id)
+        self.selected_image_path = None
  
         self.build_header()
         self.build_add_card_form()
@@ -62,9 +64,41 @@ class DeckDetail(ctk.CTkFrame):
  
         add_btn = ctk.CTkButton(entry_row, text="Add", width=80, command=self.on_add_card)
         add_btn.pack(side="left")
+
+        import_btn = ctk.CTkButton(
+            entry_row, text="Import CSV", width=110, fg_color="#555555",
+            command=self.on_import_csv,
+        )
+        import_btn.pack(side="left")
  
+        image_row = ctk.CTkFrame(form, fg_color="transparent")
+        image_row.pack(fill="x", padx=16, pady=(0, 8))
+ 
+        image_btn = ctk.CTkButton(
+            image_row, text="Attach Image", width=130, fg_color="#555555",
+            command=self.on_attach_image,
+        )
+        image_btn.pack(side="left")
+ 
+        self.image_status_label = ctk.CTkLabel(
+            image_row, text="No image selected", text_color="gray"
+        )
+        self.image_status_label.pack(side="left", padx=10)
+
         self.form_error_label = ctk.CTkLabel(form, text="", text_color="#e74c3c")
         self.form_error_label.pack(anchor="w", padx=16, pady=(0, 8))
+
+    def on_attach_image(self):
+        file_path = filedialog.askopenfilename(
+            title="Select an image",
+            filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.webp")],
+        )
+        if not file_path:
+            return  
+ 
+        self.selected_image_path = file_path
+        filename = file_path.split("/")[-1].split("\\")[-1]
+        self.image_status_label.configure(text=f"Selected: {filename}", text_color="#2fa572")
 
     def on_add_card(self):
         front = self.front_entry.get().strip()
@@ -73,8 +107,16 @@ class DeckDetail(ctk.CTkFrame):
         if not front or not back:
             self.form_error_label.configure(text="Both front and back are required.")
             return
+
+        saved_image_path = None
+        if self.selected_image_path:
+            try:
+                saved_image_path = save_card_image(self.selected_image_path)
+            except (FileNotFoundError, ValueError) as e:
+                self.form_error_label.configure(text=f"Image error: {e}")
+                return
  
-        card = Card(deck_id=self.deck_id, front_text=front, back_text=back)
+        card = Card(deck_id=self.deck_id, front_text=front, back_text=back, image_path=saved_image_path)
         self.master_app.session.add(card)
         self.master_app.session.commit()
  
@@ -91,7 +133,7 @@ class DeckDetail(ctk.CTkFrame):
             filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
         )
         if not file_path:
-            return  # user cancelled the dialog
+            return  
  
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -151,6 +193,10 @@ class DeckDetail(ctk.CTkFrame):
  
             back_label = ctk.CTkLabel(row, text=f"→ {card.back_text}", anchor="w", text_color="gray")
             back_label.pack(side="left", padx=(0, 8), pady=8)
+
+            if card.image_path:
+                image_indicator = ctk.CTkLabel(row, text="🖼", text_color="gray")
+                image_indicator.pack(side="left", padx=(0, 8))
  
             status_label = ctk.CTkLabel(row, text=card.status, text_color="#2fa572")
             status_label.pack(side="right", padx=12)
