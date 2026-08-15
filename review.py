@@ -146,7 +146,7 @@ class ReviewView(ctk.CTkFrame):
         self.load_next_card()
  
     def _show_session_complete(self):
-        self.front_label.configure(text="All done for now! 🎉")
+        self.front_label.configure(text="All done for now!")
         self.progress_label.configure(text=f"Reviewed {self.reviewed_count} card(s)")
         self.show_answer_btn.pack_forget()
         self.rating_buttons_frame.pack_forget()

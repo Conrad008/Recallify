@@ -12,7 +12,7 @@ class App(ctk.CTk):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
  
-        self.title("SpacedCards")
+        self.title("Recallify")
         self.geometry("900x650")
         self.minsize(700, 500)
 
