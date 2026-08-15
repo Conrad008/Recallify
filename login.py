@@ -17,7 +17,7 @@ class LoginView(ctk.CTkFrame):
         container.place(relx=0.5, rely=0.5, anchor="center")
  
         self.title_label = ctk.CTkLabel(
-            container, text="SpacedCards", font=ctk.CTkFont(size=28, weight="bold")
+            container, text="Recallify", font=ctk.CTkFont(size=28, weight="bold")
         )
         self.title_label.pack(pady=(0, 4))
  
@@ -39,7 +39,7 @@ class LoginView(ctk.CTkFrame):
         self.error_label.pack(pady=(8, 0))
  
         self.submit_button = ctk.CTkButton(
-            container, text="Log In", width=280, command=self._on_submit
+            container, text="Log In", width=280, command=self.on_submit
         )
         self.submit_button.pack(pady=(12, 6))
  
@@ -49,7 +49,7 @@ class LoginView(ctk.CTkFrame):
             width=280,
             fg_color="transparent",
             hover_color=("#dddddd", "#333333"),
-            command=self._toggle_mode,
+            command=self.toggle_mode,
         )
         self.toggle_button.pack(pady=(0, 4))
      
