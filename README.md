@@ -29,12 +29,7 @@ The app supports multiple user accounts on the same machine, so each person has 
   - **Easiness Factor** — how "easy" the card is for you
   - **Repetitions** — consecutive successful recalls
   - **Interval** — days until the card is due again
-- Every review is logged with a timestamp and rating, building a full review history per card
-### 5. Stats Dashboard
-- Reviews over time (bar chart)
-- Distribution of quality ratings (how often you recall cards well vs. poorly)
-- Breakdown of cards by status: new / learning / mastered
-- Charts are scoped to the logged-in user's own data
+  - Every review is logged with a timestamp and rating, building a full review history per card
 
 ## Tech Stack
  
@@ -55,7 +50,7 @@ flashcard_app/
 ├── database.py            # SQLite setup + queries
 ├── models.py               # User, Deck, Card, ReviewLog classes
 ├── scheduler.py             # SM-2 spaced repetition logic
-├── csv_importer.py          # CSV bulk import logic
+├── csvimporter.py          # CSV bulk import logic
 ├── auth.py                   # Password hashing/verification
 ├── requirements.txt
 └── ui/
@@ -64,8 +59,6 @@ flashcard_app/
     ├── deck_list_view.py     # List of user's decks
     ├── deck_detail_view.py   # Cards within a deck, add/import
     ├── review_view.py        # Review session screen
-    └── stats_view.py          # Charts and stats screen
-
 ```
 
 ## How the SM-2 Algorithm Works (Summary)
